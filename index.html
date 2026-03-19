@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pomológia Bielych Karpát I.</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+/* RESET + BASE */
+    * {box-sizing: border-box;}
+    html { scroll-behavior: smooth; }
+    body {font-family: Arial, sans-serif; margin:0; line-height:1.6; color: #333; background-color: #fff;}
+    img {max-width:100%; display:block;}
+
+    header {background:#8a7d3c; color:white; padding:30px 15px; text-align:center;}
+    header h1 {font-size:24px; margin:0 0 10px;}
+
+    /* STICKY NAV */
+    .nav-wrap {position:sticky; top:0; z-index:1000; background:#eee; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+    
+    nav {
+        padding: 10px 20px;
+        display: flex;
+        flex-wrap: wrap; 
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .hamburger {
+        display: block;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 30px;
+        color: #2c5f2d;
+    }
+
+    .menu {
+        display: none;
+        width: 100%; 
+        flex-direction: column;
+    }
+
+    .menu.open { display: flex; }
+
+    .menu a {
+        display: block;
+        padding: 15px 0;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* ZÁKLADNÁ SEKCOA (Centrovaná na 1000px) */
+    section {
+        padding: 60px 15px;
+        max-width: 1000px;
+        margin: 0 auto;
+        scroll-margin-top: 80px;
+        position: relative;
+    }
+
+    /* ŠPECIÁLNA TRIEDA PRE FULL-WIDTH POZADIE */
+    .full-width {
+        max-width: none !important;
+        width: 100%;
+        padding: 60px 0;
+    }
+
+    /* KONTAJNER PRE OBSAH VO FULL-WIDTH SEKCIÁCH */
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 5;
+    }
+
+    h2 {color:#2c5f2d; margin-top:0; border-bottom: 2px solid #2c5f2d; display: inline-block; padding-bottom: 5px;}
+
+    /* UNIVERZÁLNY DVOJSTĹPCOVÝ (SPLIT) LAYOUT */
+    .split-layout {
+        display: flex;
+        flex-direction: column; /* Mobil: pod sebou */
+        gap: 30px;
+        align-items: center;
+    }
+
+    .split-col-img {
+        flex: 1;
+        width: 100%;
+    }
+
+    .split-col-text {
+        flex: 1;
+        width: 100%;
+    }
+
+    .split-col-img img {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* CARDS */
+    .grid {display:grid; grid-template-columns:1fr; gap:16px; margin-top: 20px;}
+    .card {background:#f9f9f9; padding:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 4px solid #2c5f2d;}    
+
+    footer {background:#333; color:white; text-align:center; padding:30px; margin-top: 50px;}
+
+    /* SLIDER */
+     /*.slider {
+        position: relative; 
+        max-width: 100%; 
+        overflow: hidden; 
+        background: #000;
+        height: auto; 
+    }
+
+    .slides {
+        display: flex; 
+        height: auto;
+        transition: transform 0.5s ease-in-out;
+        align-items: flex-start;
+    }
+
+    .slides img {
+        width: 100%; 
+        height: auto; 
+        object-fit: contain; 
+        flex: 0 0 100%;
+        display: block;
+    } */
+    /* SLIDER - ZÚŽENÝ S VERTIKÁLNYM CENTROVANÍM */
+    .slider {
+        position: relative; 
+        max-width: 100%; 
+        overflow: hidden; 
+        background: #000;
+        /* Tu nastavuješ, aký úzky má byť slider na veľkej obrazovke */
+        height: 500px; 
+    }
+
+    /* Na mobiloch môžeme nechať slider trochu vyšší alebo automatický, aby kniha vynikla */
+    @media (max-width: 768px) {
+        .slider {
+            height: 400px; 
+        }
+    }
+
+    .slides {
+        display: flex; 
+        height: 100%; /* Vyplní nastavenú výšku slidera */
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slides img {
+        width: 100%; 
+        height: 100%; 
+        /* KĽÚČOVÉ: object-fit vyplní plochu a object-position vycentruje orezanie */
+        object-fit: cover; 
+        object-position: center center; 
+        flex: 0 0 100%;
+        display: block;
+    }
+    /* ŠÍPKY */
+    .prev, .next {
+        position: absolute; 
+        top: 50%; 
+        transform: translateY(-50%); 
+        background: rgba(0,0,0,0.3); 
+        color: white; 
+        border: none; 
+        padding: 15px; 
+        cursor: pointer; 
+        font-size: 24px; 
+        border-radius: 50%; 
+        z-index: 10;
+        transition: background 0.3s;
+    }
+    .prev:hover, .next:hover { background: rgba(0,0,0,0.7); }
+    .prev { left: 15px; }
+    .next { right: 15px; }
+
+    /* BODKY (INDIKÁTORY) */
+    .dots-container {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+    
+    /* .slider {position:relative; max-width:100%; overflow:hidden; background: #000;}
+    .slides {display:flex; transition: transform 0.5s ease-in-out;}
+    .slides img {width:100%; height:50vh; min-height:250px; max-height:450px; object-fit:cover; flex:0 0 100%; opacity: 0.9;}
+
+    .prev, .next {position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; padding:12px; cursor:pointer; font-size:20px; border-radius: 50%;}
+    .prev {left:5px;} .next {right:5px;}*/
+
+    /* FADE-IN ANIMATION */
+    .fade {opacity:0; transform: translateY(20px); transition: all 0.6s ease-out;}
+    .fade.show {opacity:1; transform: translateY(0);}
+
+    /* DESKTOP RESPONSIVITY */
+    @media (min-width: 768px) {
+        header h1 {font-size:40px;}
+        .hamburger {display:none;}
+        nav { justify-content: center; }
+        .menu { display: flex !important; flex-direction: row; width: auto; gap: 30px; }
+        .menu a { border-bottom: none; }
+        .grid {grid-template-columns: 1fr 1fr 1fr;}
+
+        /* Desktop nastavenia pre dvojsĺpce */
+        .split-layout {
+            flex-direction: row; 
+            text-align: left;
+            align-items: flex-start;
+        }
+        .split-layout.reverse {
+            flex-direction: row-reverse;
+        }
+        .split-col-img {
+            flex: 0 0 35%; /* Obrázok zaberie 35% */
+        }
+        .split-col-text {
+            flex: 0 0 65%; /* Text zaberie 65% */
+            padding-left: 30px;
+        }
+        .split-layout.reverse .split-col-text {
+            padding-left: 0;
+            padding-right: 30px;
+        }
+    }
+
+    /* SEKCE UKÁŽKY Z KNIHY (Miniatúry) */
+    .book-previews {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .preview-item {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 5px;
+        background: #fff;
+    }
+
+    .preview-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* MODAL (POP-UP) */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90vh;
+        border-radius: 5px;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 20px; right: 30px;
+        color: white; font-size: 40px; cursor: pointer;
+    }
+
+    /* POZADIE PRE FORMULÁR */
+    .bg-formular {
+        background-image: url('img/formular.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .bg-formular::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(245, 245, 240, 0.8); /* Svetlý filter */
+        z-index: 1;
+    }
+.social-links {
+        margin-top: 20px;
+        display: flex;
+        gap: 20px;
+        justify-content: center; /* Zarovná ikonky na stred */
+    }
+
+    .social-links a {
+        color: #2c5f2d; /* Tvoja zelená farba */
+        font-size: 35px; /* Veľkosť ikoniek */
+        transition: transform 0.3s ease, color 0.3s ease;
+        text-decoration: none;
+    }
+
+    .social-links a:hover {
+        transform: scale(1.2); /* Jemné zväčšenie pri prejdení myšou */
+        color: #45a049; /* Trochu svetlejšia zelená pri hoveri */
+    }
+    
+    /* Špecifická farba pre YouTube pri prejdení (voliteľné) */
+    .social-links a:hover .fa-youtube {
+        color: #FF0000; 
+    }    
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Pomológia Bielych Karpát I.</h1>
+  <p>Prvá kniha venovaná hruškám</p>
+</header>
+
+<div class="slider">
+  <div class="slides" id="slides">
+    <img src="img/img001.jpg" alt="Hruška 1">
+    <img src="img/img002.jpg" alt="Hruška 2">
+    <img src="img/img003.jpg" alt="Hruška 3">
+  </div>
+  
+  <button class="prev" onclick="moveSlide(-1)">❮</button>
+  <button class="next" onclick="moveSlide(1)">❯</button>
+
+  <div class="dots-container" id="dotsContainer">
+    <span class="dot active" onclick="currentSlide(0)"></span>
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <nav>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    <div class="menu" id="menu">
+      <a href="#about" onclick="closeMenu()">O autorovi</a>
+      <a href="#book" onclick="closeMenu()">O knihe</a>
+      <a href="#reviews" onclick="closeMenu()">Recenzie</a>
+      <a href="#order" onclick="closeMenu()">Objednávka</a>
+      <a href="#contact" onclick="closeMenu()">Kontakt</a>
+    </div>
+  </nav>
+</div>
+
+<section id="about" class="fade">
+  <h2>O autorovi</h2> 
+
+  <div class="split-layout">
+    <div class="split-col-img">
+      <img src="img/autor.png" alt="Fotka autora" style="border-radius: 40px 0 0 40px; box-shadow: none !important; border: none;">
+    </div>
+    <div class="split-col-text">
+      <p>
+        Vzťah k ovociu a stromom som si budoval odmalička. Staré odrody a ich určovanie, sa stali mojim koníčkom 
+        a celý život sa im s veľkým zápalom venujem. Hoci som vyštudoval Fakultu chemickú na Vysokom učení 
+        technickom v Brne a v tomto odvetví pôsobím, môj vzťah k ovocinárstvu časom prerástol do systematického 
+        záujmu o zachovanie miestnych a krajových odrôd a profesionálne som v tejto oblasti vyrástol.
+      </p>
+      <p>
+        Moja práca nadväzuje na tradíciu klasickej, najmä českej pomológie, no zároveň reaguje na súčasné výzvy, 
+        ktoré ohrozujú genetickú a kultúrnu rozmanitosť bielokarpatských sadov. Publikácia je výsledkom 
+        niekoľkoročného terénneho výskumu a snahy systematicky zdokumentovať naše kultúrne dedičstvo, 
+        ktoré by inak mohlo nenávratne zaniknúť.
+      </p>
+    </div>
+    
+  </div>
+</section>
+
+<section id="book" class="fade">
+  <h2>Krátko o publikácii</h2>
+  <p>Táto kniha je prvou slovenskou regionálnou pomológiou. Na 384 stranách knihy nájdete výsledky terénneho mapovania z oblasti Bielych Karpát, detailné popisy a autentické fotografie celkovo 135 odrôd hrušiek. Z tohto počtu je 55 starých, všeobecne rozšírených odrôd a 80 miestnych a krajových odrôd špecifických pre tento región. Kniha je obohatená množstvom tématických ilustrácií od grafika Jana Karlíka.</p>
+  
+  <div class="book-previews">
+    <div class="preview-item" onclick="openModal('img/kniha1.jpg')">
+      <img src="img/kniha1_ukazka.jpg" alt="Ukážka z knihy 1">
+      <p style="text-align:center; font-size: 0.9em; margin-top: 10px;">Úvod</p>
+    </div>
+    
+    <div class="preview-item" onclick="openModal('img/kniha2.PNG')">
+      <img src="img/kniha2_ukazka.PNG" alt="Ukážka z knihy 2">
+      <p style="text-align:center; font-size: 0.9em; margin-top: 10px;">Krvavka z Lednických Rovní</p>
+    </div>
+  </div>
+</section>
+
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close-modal">&times;</span>
+  <img class="modal-content" id="modalImg">
+</div>
+
+<section id="reviews" class="fade">
+  <h2>Recenzie</h2>
+  <div class="grid">
+    <div class="card">„Konečne je tu obsiahla publikácia o starých, krajových a miestnych odrodách ovocných drevín slovenskej strany Bielych Karpát...“<br><strong>- RNDr. Katarína Ďurčeková</strong></div>
+    <div class="card">„Díky této publikaci můžeme objevovat pestrost, krásu a hodnotu odrůd, které by jinak došly zapomění.“<br><strong>- Dominik Grohmann</strong></div>
+    <div class="card">„Táto kniha je jedným z dôležitých míľnikov pre všetkých, ktorým záleží ako bude vyzerať ovocná budúcnosť.“<br><strong>- Mgr. Ľudovít Vašš</strong></div>
+  </div>
+</section>
+  
+<section id="order" class="full-width bg-formular fade">
+  <div class="container">
+    <h2 style="color: #2c5f2d; border-bottom-color: #2c5f2d;">Objednávka</h2>
+    <p>Vyplňte formulár nižšie:</p>
+    
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfh-ZLXX53RW-apKNaa68-lLcgtqwowB7kT6NLga418Plgwqw/viewform?embedded=true"
+            width="100%" 
+            height="1200" 
+            frameborder="0" 
+            style="border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: white;">
+            Načítava sa…
+    </iframe>
+  </div>
+</section>
+
+<section id="contact" class="fade">
+  <h2>Kontakt</h2>
+  <p>Email: <a href="mailto:pomologiabk@gmail.com" style="color: #2c5f2d; text-decoration: none; font-weight: bold;">pomologiabk@gmail.com</a></p>
+  <p>Mobil: +420 733 154 796 </p>
+  <a href="https://www.facebook.com/ovociebielychkarpat" target="_blank" title="Facebook">
+      <i class="fab fa-facebook"></i>
+  </a>
+  </section>
+
+<footer>
+  <p>&copy; 2026 Ľuboš Červený | Design by Prodata plus s.r.o.</p>
+</footer>
+
+<script>
+  
+  // SLIDER
+  let index = 0;
+const slides = document.getElementById('slides');
+const dots = document.querySelectorAll('.dot');
+const total = slides.children.length;
+
+function updateSlider() {
+    // Posun obrázkov
+    slides.style.transform = `translateX(${-index * 100}%)`;
+    
+    // Reset všetkých bodiek a nastavenie aktívnej
+    dots.forEach(dot => dot.classList.remove('active'));
+    if (dots[index]) {
+        dots[index].classList.add('active');
+    }
+}
+
+function moveSlide(step) {
+    index = (index + step + total) % total;
+    updateSlider();
+}
+
+function currentSlide(n) {
+    index = n;
+    updateSlider();
+}
+
+// Oprava automatického posunu tak, aby aktualizoval aj bodky
+let autoSlide = setInterval(() => moveSlide(1), 5000);
+
+// Zastavenie automatu, ak užívateľ klikne na šípku (dobrý UX zvyk)
+document.querySelectorAll('.prev, .next, .dot').forEach(el => {
+    el.addEventListener('click', () => {
+        clearInterval(autoSlide);
+        autoSlide = setInterval(() => moveSlide(1), 5000);
+    });
+});
+
+  // Automatické prepínanie (voliteľné)
+  setInterval(() => moveSlide(1), 6000);
+  //let index = 0;
+  //const slides = document.getElementById('slides');
+  //const total = slides.children.length;
+
+  //function moveSlide(step) {
+//    index = (index + step + total) % total;
+  //  slides.style.transform = 'translateX(' + (-index * 100) + '%)';
+  //}
+
+  //setInterval(() => moveSlide(1), 5000);
+
+  // MENU
+  function toggleMenu() { document.getElementById('menu').classList.toggle('open'); }
+  function closeMenu() { document.getElementById('menu').classList.remove('open'); }
+
+  // FADE-IN ON SCROLL
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('show');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade').forEach(el => observer.observe(el));
+
+  // MODAL UKÁŽKY
+  function openModal(imgSrc) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    modal.style.display = "flex";
+    modalImg.src = imgSrc;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+</script>
+
+</body>
+</html>
