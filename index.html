@@ -37,16 +37,14 @@
         position: relative;
         overflow: hidden;
     }
-        /* UPRAVENÝ SLIDER PRE LEPŠÍ VZHĽAD 4:3 */
     .slider-viewport {
         position: relative;
         width: 100%;
-        /* Ponechávame pomer 4:3 (výška je 75% šírky) */
-        padding-top: 75%; 
+        /* PRE FORMÁT 16:9: Výška je 56.25% šírky (9 deleno 16) */
+        padding-top: 56.25%; 
         background: #f4f4f4;
         border-radius: 12px;
         overflow: hidden;
-        /* PRIDANÉ: Jemný tieň pre lepší vizuálny efekt */
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
@@ -65,10 +63,8 @@
     .slide-item img {
         width: 100%;
         height: 100%;
-        /* ZMENENÉ: object-fit na 'contain' zobrazí CELÝ obrázok */
-        /* bez orezania, vnútri 4:3 kontajnera. Prípadné prázdne */
-        /* miesta po bokoch/hore/dole budú mať farbu background-u. */
-        object-fit: contain; 
+        /* Použijeme cover, aby fotka dokonale vyplnila širokouhlý formát */
+        object-fit: cover; 
         object-position: center;
     }
     
