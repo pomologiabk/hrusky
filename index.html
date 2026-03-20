@@ -37,16 +37,19 @@
         position: relative;
         overflow: hidden;
     }
-
+        /* UPRAVENÝ SLIDER PRE LEPŠÍ VZHĽAD 4:3 */
     .slider-viewport {
         position: relative;
         width: 100%;
-        padding-top: 75%; /* Pomer 4:3 */
+        /* Ponechávame pomer 4:3 (výška je 75% šírky) */
+        padding-top: 75%; 
         background: #f4f4f4;
         border-radius: 12px;
         overflow: hidden;
+        /* PRIDANÉ: Jemný tieň pre lepší vizuálny efekt */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-
+    
     .slides-wrapper {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -58,14 +61,17 @@
         flex: 0 0 100%;
         height: 100%;
     }
-
+    
     .slide-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Vyplní 4:3 plochu */
+        /* ZMENENÉ: object-fit na 'contain' zobrazí CELÝ obrázok */
+        /* bez orezania, vnútri 4:3 kontajnera. Prípadné prázdne */
+        /* miesta po bokoch/hore/dole budú mať farbu background-u. */
+        object-fit: contain; 
         object-position: center;
     }
-
+    
     .prev, .next {
         position: absolute;
         top: 50%;
